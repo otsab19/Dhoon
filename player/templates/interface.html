@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% block title %}{{ album }}{% endblock %}
+<!--{% block albums_active %}active{% endblock %}-->
+
+{% block body %}
+
+<div class="row container-fluid" hidden='true'>
+    <div class="col-sm-4 col-md-4">
+        <ul class="nav nav-pills" style="margin-bottom: 10px;">
+            <li role="presentation" class="active"><a href="#">Up Next:</a></li>
+            <li role="presentation" class="active">
+                <ul><a href="#" id="nowplaying1">Add New Song</a></ul>
+                <ul><a href="#" id="nowplaying2">Add New Song</a></ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-sm-3 col-md-3" >
+        <audio id="myaudio" controls="controls">
+            HTML5 audio not supported.
+        </audio>
+    </div>
+
+
+    <div class="col-sm-2 col-md-2">
+        <div class="rating" id="rater">
+            <input type="radio" name="5_star" id="5" value="5" onclick="getstar(this.id)">
+            <label for='5'>&#9734</label>
+            <input type="radio" name="4_star" id="4" value="4" onclick="getstar(this.id)">
+            <label for='4'>&#9734</label>
+            <input type="radio" name="3_star" id="3" value="3" onclick="getstar(this.id)">
+            <label for='3'>&#9734</label>
+            <input type="radio" name="2_star" id="2" value="2" onclick="getstar(this.id)">
+            <label for='2'>&#9734</label>
+            <input type="radio" name="1_star" id="1" value="1" onclick="getstar(this.id)">
+            <label for='1'>&#9734</label>
+        </div>
+    </div>
+
+    <div class="col-sm-3 col-md-3">
+        <ul class="nav nav-pills" style="margin-bottom: 10px;">
+            <li role="presentation" class="active"><a href="#">Up Next:</a></li>
+            <li role="presentation" class="active">
+                <ul><a href="#" id="upnext1">Playing:</a></ul>
+                <ul><a href="#" id="upnext2">Add New Song</a></ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="container-fluid songs-container">
+
+    <div class="row">
+
+        <!-- Left Album Info -->
+        <div class="col-sm-4 col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <a href="{% url 'interface' album.id %}">
+                        {% if album.album_art %}
+                            <img src="{{ album.album_art.url }}" class="img-responsive">
+                        {% else %}
+                            <h3>No image to display</h3>
+                        {% endif %}
+                    </a>
+                    <h1>{{ album.album_title }} <small>{{ album.genre }}</small></h1>
+                    <h2>{{ album.artist }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Song Info -->
+        <div class="col-sm-8 col-md-9">
+
+            <ul class="nav nav-pills" style="margin-bottom: 10px;">
+                <li role="presentation" class="active"><a href="{% url 'interface' album.id %}">View All</a></li>
+                {% if album.user == user %}
+                <li role="presentation"><a href="{% url 'create_song' album.id %}">Add New Song</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <h3>All Songs</h3>
+
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Your Rating</th>
+                            <th>Audio File</th>
+                            {% if album.user == user %}
+                            <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for song,rating in data %}
+                            <tr>
+                                <td>{{ song.name }}</td>
+                                <td>
+                                {% if rating == 5 %}
+                                    <span id="{{ song.name }}_{{user.username}}_rating">&#9733&#9733&#9733&#9733&#9733</span>
+                                {% elif rating == 4 %}
+                                    <span id="{{ song.name }}_{{user.username}}_rating">&#9733&#9733&#9733&#9733&#9734</span>
+                                {% elif rating == 3 %}
+                                    <span id="{{ song.name }}_{{user.username}}_rating">&#9733&#9733&#9733&#9734&#9734</span>
+                                {% elif rating == 2 %}
+                                    <span id="{{ song.name }}_{{user.username}}_rating">&#9733&#9733&#9734&#9734&#9734</span>
+                                {% elif rating == 1 %}
+                                    <span id="{{ song.name }}_{{user.username}}_rating">&#9733&#9734&#9734&#9734&#9734</span>
+                                {% else %}
+                                    <span id="{{ song.name }}_{{user.username}}_rating">&#9734&#9734&#9734&#9734&#9734</span>
+                                {% endif %}
+                                </td>
+                                <td>
+                                        <button id="{{ song.audio.url }}" value="{{ rating }}" name="{{ song.name }}" type="button" class="btn btn-success btn-xs" onclick="AudioSong(this.id, this.name, this.value)">
+                                            <span class="glyphicon glyphicon-play"></span>&nbsp; Play
+                                        </button>
+                                    <!-- <audio controls>
+                                        <source src="{{ song.audio.url }}" type="audio/mpeg">
+                                    </audio> -->
+                                </td>
+                                {% if album.user == user %}
+                                <td>
+                                    <form action="{% url 'delete_song' album.id song.id %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="song_id" value="{{ song.id }}" />
+                                        <button type="submit" class="btn btn-danger btn-xs">
+                                            <span class="glyphicon glyphicon-remove"></span>&nbsp; Delete
+                                        </button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script> -->
+<script>
+    var oAudio = document.getElementById("myaudio");
+    var currentPlay = "";
+
+    function getCookie(c_name){
+        if (document.cookie.length > 0){
+            c_start = document.cookie.indexOf(c_name + "=");
+            if (c_start != -1){
+                c_start = c_start + c_name.length + 1;
+                c_end = document.cookie.indexOf(";", c_start);
+                if (c_end == -1) c_end = document.cookie.length;
+                return unescape(document.cookie.substring(c_start,c_end));
+            }
+        }
+        return "";
+    }
+
+    $(function () {
+        $.ajaxSetup({
+            headers: { "X-CSRFToken": getCookie("csrftoken") }
+        });
+    });
+
+    function getNext(cSong){
+        $.ajax({
+            url : "/test/",
+            type : "POST",
+            dataType : 'json',
+            data : { 'csrfmiddlewaretoken' : '{{ csfr_token }}', 'cSong':cSong},
+           success : function(data){
+                console.log(data.nextSngName,"ghfhgfghf");
+                var upnext1 = document.getElementById("upnext1");
+                upnext1.innerHTML=data.nextSngName;
+                var upnext2 = document.getElementById("upnext2");
+                upnext2.innerHTML=data.artist;
+                console.log("next song ko details",data.nextSngUrl, data.nextSngName, data.nextSngRating);
+                oAudio.addEventListener("ended", function(){
+                    playAudio(data.nextSngUrl, data.nextSngName, data.nextSngRating); 
+                });
+            },
+            error: function(){alert('response');}
+        });    
+    }
+
+    function AudioSong(clicked_id, clicked_name, rating){
+        try {
+            oAudio.removeAttribute("src");
+            console.log(oAudio.src);
+            oAudio.src = clicked_id;
+        } catch(err) {
+            console.log("khai k ho kunni");
+        }
+        var nowplaying2 = document.getElementById("nowplaying2");
+        nowplaying2.innerHTML = clicked_name;
+        var playerdiv = oAudio.parentNode;
+        var playermain = playerdiv.parentNode;
+        playermain.hidden = false;
+        currentPlay = clicked_name;
+        var count = 5;
+        if ( rating != 'None'){
+            rate_value = parseInt(rating);
+        } else {
+            rate_value = rating;
+        }
+        var rating_stars = document.getElementById('rater');
+        rating_stars.hidden = false;
+        if (typeof rate_value == 'number') {
+            while ( count > rate_value ) {
+                var button = document.getElementById(count);
+                button.checked = false;
+                button.disabled = true;
+                count--;
+            }
+            while ( count > 0 ) {
+                var button = document.getElementById(count);
+                button.checked = true;
+                button.disabled = true;
+                count--;
+            }
+        } else {
+            console.log("Nan wala part");
+            while(count>0){
+                var button = document.getElementById(count);
+                button.checked = false;
+                button.disabled = false;
+                count--;
+            }
+        }
+        oAudio.play();
+        getNext(currentPlay);
+    }
+
+    function getstar(stars){
+        var ratedvalue = parseInt(stars);
+        console.log(ratedvalue);
+        var count = 5;
+        while ( count > ratedvalue ) {
+            var button = document.getElementById(count);
+            button.checked = false;
+            button.disabled = true;
+            count--;
+        }
+        while ( count > 0 ) {
+            var button = document.getElementById(count);
+            button.checked = true;
+            button.disabled = true;
+            count--;
+        }
+        rate_current_song(currentPlay, ratedvalue);
+    }
+
+    function rate_current_song(cSong, star){
+        $.ajax({
+            url : "/rate/",
+            type : "POST",
+            dataType : "json",
+            data : {'csrfmiddlewaretoken': '{{ csrf_token }}', 'cSong':cSong, 'star':star},
+            success : function(data){
+                console.log(data.song_name+"_"+data.user_name+"_"+star);
+                var rated = document.getElementById(data.song_name+"_"+data.user_name+"_rating");
+                console.log(rated);
+                if ( star == 5 ) {
+                    rated.innerHTML = "&#9733&#9733&#9733&#9733&#9733";
+                } else if ( star == 4 ) {
+                    rated.innerHTML = "&#9733&#9733&#9733&#9733&#9734";
+                } else if ( star == 3 ) {
+                    rated.innerHTML = "&#9733&#9733&#9733&#9734&#9734";
+                } else if ( star == 2 ) {
+                    rated.innerHTML = "&#9733&#9733&#9734&#9734&#9734";
+                } else if ( star == 1 ) {
+                    rated.innerHTML = "&#9733&#9734&#9734&#9734&#9734";
+                } else {
+                    rated.innerHTML = "&#9734&#9734&#9734&#9734&#9734";
+                }
+            },
+            error : function(data){alert(data.response);}
+        });
+    }
+</script>
+{% endblock %}
