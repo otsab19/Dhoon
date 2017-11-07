@@ -4,7 +4,7 @@
 
 {% block body %}
 
-<div class="row container-fluid" hidden='true'>
+<div class="row container" hidden='true'>
     <div class="col-sm-4 col-md-4">
         <ul class="nav nav-pills" style="margin-bottom: 10px;">
             <li role="presentation" class="active"><a href="#">Up Next:</a></li>
@@ -49,7 +49,7 @@
 </div>
 
 
-<div class="container-fluid songs-container">
+<div class="container songs-container">
 
     <div class="row">
 
@@ -121,7 +121,7 @@
                                 </td>
                                 <td>
                                         <button id="{{ song.audio.url }}" value="{{ rating }}" name="{{ song.name }}" type="button" class="btn btn-success btn-xs" onclick="AudioSong(this.id, this.name, this.value)">
-                                            <span class="glyphicon glyphicon-play"></span>&nbsp; Play
+                                            <span class="glyphicon glyphicon-play-circle""></span>&nbsp; Play
                                         </button>
                                     <!-- <audio controls>
                                         <source src="{{ song.audio.url }}" type="audio/mpeg">

@@ -3,7 +3,7 @@
 {% block songs_active %}active{% endblock %}
 
 {% block body %}
-<div class="container-fluid songs-container">
+<div class="container songs-container">
 
     <div class="row">
         <div class="col-sm-12">
@@ -34,14 +34,16 @@
                                     <td>{{ song.name }}</td>
                                     <td>{{ song.album.artist }}</td>
                                     <td>
+                                            
                                             <button id="{{ song.audio.url }}" type="button" class="btn btn-success btn-xs">
-                                                <span class="glyphicon glyphicon-play"></span>&nbsp; Play
+                                                <span class="glyphicon glyphicon-play-circle""></span>&nbsp; Play
                                             </button>
-                                        <!-- <audio controls>
+                                        <audio controls>
                                         <source src="{{ song.audio.url }}" type="audio/mpeg">
-                                        </audio> -->
+                                        </audio>
                                     </td>
                                     <td>
+
                                         <a href="{% url 'interface' song.album.id %}">
                                             <img src="{{ song.album.album_art.url }}" class="img-responsive" style="width: 20px; float: left; margin-right: 10px;" />
                                         </a>
