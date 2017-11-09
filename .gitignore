@@ -4,4 +4,4 @@ staticfiles
 .env
 Procfile
 psycopg2
-.gitignore
+
