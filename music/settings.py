@@ -26,7 +26,7 @@ SECRET_KEY = '651l*m$#axd0^&73pacav=vv^y2_2&r%foq(*30hknjqv3dh76'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['afternoon-shore-73339.herokuapp.com']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -84,9 +84,9 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-import dj_database_url
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
+# import dj_database_url
+# db_from_env = dj_database_url.config()
+# DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
